@@ -1,0 +1,118 @@
+# photo analysis using benford's law based on the data tested the threshold values  changes
+
+
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+from PIL import Image
+from math import log10, log
+a1=[]
+a2=[]
+a3=[]
+a4=[]
+a5=[]
+a6=[]
+a7=[]
+a8=[]
+a9=[]
+
+image_path ='/content/original.zip'
+image = Image.open(image_path)
+
+image = image.convert("L")
+pixels = image.getdata()
+
+for pixel in pixels:
+
+    s=str(pixel)
+    if int(s[0])==1:
+      a1.append(s[0])
+    elif int(s[0])==2:
+      a2.append(s[0])
+    elif int(s[0])==3:
+      a3.append(s[0])
+    elif int(s[0])==4:
+      a4.append(s[0])
+    elif int(s[0])==5:
+      a5.append(s[0])
+    elif int(s[0])==6:
+      a6.append(s[0])
+    elif int(s[0])==7:
+      a7.append(s[0])
+    elif int(s[0])==8:
+      a8.append(s[0])
+    elif int(s[0])==9:
+      a9.append(s[0])
+
+print('1',a1)
+print(len(a1))
+print('2',a2)
+print(len(a2))
+print('3',a3)
+print(len(a3))
+print('4',a4)
+print(len(a4))
+print('5',a5)
+print(len(a5))
+print('6',a6)
+print(len(a6))
+print('7',a7)
+print(len(a7))
+print('8',a8)
+print(len(a8))
+print('9',a9)
+print(len(a9))
+
+li=[len(a1),len(a2),len(a3),len(a4),len(a5),len(a6),len(a7),len(a8),len(a9)]
+print(li)
+s=sum(li)
+
+y1=len(a1)/s*100
+y2=len(a2)/s*100
+y3=len(a3)/s*100
+y4=len(a4)/s*100
+y5=len(a5)/s*100
+y6=len(a6)/s*100
+y7=len(a7)/s*100
+y8=len(a8)/s*100
+y9=len(a9)/s*100
+print(s)
+x=[1,2,3,4,5,6,7,8,9]
+y=[y1,y2,y3,y4,y5,y6,y7,y8,y9]
+
+def benford(n):
+    return (log10(n+1) - log10(n))*100
+
+r = [benford(i) for i in range(1, 10)]
+l=[1,2,3,4,5,6,7,8,9]
+plt.plot(l, r,marker='*',label="benford ideal graph",color='blue')
+plt.plot(x,y,label='figure graph',marker='.',color='red')
+
+for i in range(len(x)):
+    plt.text(x[i], y[i], f"{y[i]:.2f}", ha='right', va='top')
+for i in range(len(l)):
+    plt.text(l[i], r[i], f"{r[i]:.2f}", ha='left', va='bottom')
+
+plt.legend()
+plt.grid()
+plt.show()
+
+def line_graph_similarity(r, y):
+    if len(r) != len(y):
+        raise ValueError("Both line graphs should have the same number of data points.")
+    rmse = np.sqrt(np.mean((np.array(r) - np.array(y)) ** 2))
+    similarity_percentage = 100 - (rmse / max(r) * 100)
+    return(similarity_percentage)
+
+threshold_tampered = 79.356666667
+threshold_original = 80.0633333333
+
+similarity_percentage = line_graph_similarity(r, y)
+print(f"The similarity between the two line graphs is approximately {similarity_percentage:.2f}%.")
+if similarity_percentage < threshold_tampered:
+  print("altered image based on benford's law")
+elif similarity_percentage < threshold_original:
+  print("legitimate image based on benford's law")
+else:
+  print("yet to be discoverd")
